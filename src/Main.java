@@ -34,9 +34,7 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        System.out.println("system gotowy, proszę podać K - liczbę sąsiadów");
         Scanner uzytkownikIn = new Scanner(System.in);
-        int k = uzytkownikIn.nextInt();
 
         boolean readTestFile = true;
 
@@ -51,7 +49,7 @@ public class Main {
 
             Test testUzytkownika = new Test(tmpData,"testUzytkownika");
 
-            System.out.println(finalAnswer(getNClosestTo(testUzytkownika,k)));
+        //    System.out.println(finalAnswer(getNClosestTo(testUzytkownika,k)));
         }else{
             int all = 0;
             int good = 0;
@@ -66,10 +64,10 @@ public class Main {
                     rawData = input.nextLine();
                     all++;
                     tmpTest = createTest(rawData);
-                    String finalName =finalAnswer(getNClosestTo(tmpTest,k));
-                    if(finalName.equals(tmpTest.getConclusion())){
-                        good++;
-                    }
+//                    String finalName =finalAnswer(getNClosestTo(tmpTest,k));
+//                    if(finalName.equals(tmpTest.getConclusion())){
+//                        good++;
+//                    }
                 }
 
                 double effectivness = ((double)good/all)*100;
@@ -81,51 +79,8 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
-
-
-
     }
 
-    private static String finalAnswer(Test[] testy){
-        ArrayList<String> tmplist = new ArrayList<>();
-        for (int i = 0; i < testy.length; i++) {
-            if(!tmplist.contains(testy[i].getConclusion())){
-                tmplist.add(testy[i].getConclusion());
-            }
-        }
-
-        int[] counts = new int[tmplist.size()];
-
-        String tmp;
-        int count;
-
-        for (int i = 0; i < tmplist.size(); i++) {
-            count = 0;
-            tmp = tmplist.get(i);
-            for (int j = 0; j < testy.length; j++) {
-                if(tmp.equals(testy[j].getConclusion())){
-                    count++;
-                }
-            }
-            counts[i] = count;
-        }
-
-        int highestCountIndex = 0;
-        int highestCount = Integer.MIN_VALUE;
-        for (int i = 0; i < counts.length; i++) {
-            if(counts[i]>highestCount){
-                highestCount = counts[i];
-                highestCountIndex = i;
-            }
-        }
-
-        for (int i = 0; i < tmplist.size(); i++) {
-            System.out.println(tmplist.get(i) + "'s count: " + counts[i]);
-        }
-
-
-        return tmplist.get(highestCountIndex);
-    }
 
     private static Test createTest(String entry) throws WrongFormattedDataError {
         entry = entry.replace(" ","");
@@ -150,27 +105,4 @@ public class Main {
         return test;
     }
 
-    private static Test[] getNClosestTo(Test test,int n){
-        Pair[] pary = new Pair[tests.size()];
-        Test tmpTest;
-        for (int i = 0; i < pary.length; i++) {
-            tmpTest = tests.get(i);
-            pary[i] = new Pair(tmpTest.distanceFrom(test),tmpTest);
-        }
-
-        Arrays.sort(pary, new Comparator<Pair>() {
-            @Override
-            public int compare(Pair o1, Pair o2) {
-                return (o1.getDistance()<o2.getDistance()?-1:(o1.getDistance()==o2.getDistance()?0:1));
-            }
-        });
-
-        Test[] nClosest = new Test[n];
-
-        for (int i = 0; i < nClosest.length; i++) {
-            nClosest[i] = pary[i].getTest();
-        }
-
-        return nClosest;
-    }
 }
