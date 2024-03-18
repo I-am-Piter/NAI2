@@ -71,15 +71,21 @@ public class Main {
 
         System.out.println("chcesz sprawdzić dane z pliku, czy wprowadzić własne? \n Własne dane = 0, Czytanie z pliku = inna liczba");
         readTestFile = (uzytkownikIn.nextInt() != 0);
+        boolean stillask = true;
         if(!readTestFile){
-            System.out.println("podaj teraz "+ columnCount +" wartości, zgodnie z tym jak system był trenowany, oddziel je enterem (0,0 ; nie 0.0)");
-            double[] tmpData = new double[columnCount];
-            for (int i = 0; i < columnCount; i++) {
-                 tmpData[i] = uzytkownikIn.nextDouble();
-            }
+            while(stillask) {
+                System.out.println("podaj teraz " + columnCount + " wartości, zgodnie z tym jak system był trenowany, oddziel je enterem (0,0 ; nie 0.0)");
+                double[] tmpData = new double[columnCount];
+                for (int i = 0; i < columnCount; i++) {
+                    tmpData[i] = uzytkownikIn.nextDouble();
+                }
 
-            Test testUzytkownika = new Test(tmpData,"testUzytkownika");
-            System.out.println((perceptron.classify(testUzytkownika))?"to setosa":"to nie setosa");
+                Test testUzytkownika = new Test(tmpData, "testUzytkownika");
+                System.out.println((perceptron.classify(testUzytkownika)) ? "to setosa" : "to nie setosa");
+                System.out.println("chcesz wprowadzić kolejny przypadek, czy zakończyć działanie programu? (aby zakończyć wpisz 0, aby kontynuować wpisz inną liczbę)");
+
+                stillask = (uzytkownikIn.nextInt() != 0);
+            }
         }else{
             int all = 0;
             int good = 0;
