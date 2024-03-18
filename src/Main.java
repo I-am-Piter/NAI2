@@ -15,7 +15,7 @@ public class Main {
     static int columnCount = 0;
     static boolean firstObject = true;
     public static void main(String[] args) {
-        File inputFile = new File("mpp1/iris_training.txt");
+        File inputFile = new File("mpp2/iris_training.txt");
         try {
             Scanner input = new Scanner(inputFile);
             while(input.hasNextLine()) {
@@ -38,25 +38,54 @@ public class Main {
 
         boolean readTestFile = true;
 
+        //trenowanie perceptronu
+
+        Perceptron perceptron = new Perceptron(columnCount);
+
+        boolean stillTrain = true;
+        Test tmpTest = null;
+        int iterNum = 0;
+        double[] dataTab = new double[columnCount];
+        boolean isSetosa = false;
+
+        while(stillTrain){
+            stillTrain = false;
+            iterNum++;
+            for (int i = 0; i < tests.size(); i++) {
+                tmpTest = tests.get(i);
+                for (int j = 0; j < dataTab.length; j++) {
+                    dataTab[j] = tmpTest.getMeasurementAt(j);
+                }
+                isSetosa = perceptron.classify(dataTab);
+                if(isSetosa && (!tmpTest.getConclusion().equals("Iris-setosa"))){
+                    perceptron.adjust(dataTab,-1,0.5);
+                    stillTrain = true;
+                } else if (!isSetosa && (tmpTest.getConclusion().equals("Iris-setosa"))) {
+                    perceptron.adjust(dataTab,1,0.5);
+                    stillTrain = true;
+                }
+            }
+        }
+
+
+
         System.out.println("chcesz sprawdzić dane z pliku, czy wprowadzić własne? \n Własne dane = 0, Czytanie z pliku = inna liczba");
         readTestFile = (uzytkownikIn.nextInt() != 0);
         if(!readTestFile){
-            System.out.println("podaj teraz "+ columnCount +" wartości, zgodnie z tym jak system był trenowany, oddziel je enterem (0.0 ; nie 0,0)");
+            System.out.println("podaj teraz "+ columnCount +" wartości, zgodnie z tym jak system był trenowany, oddziel je enterem (0,0 ; nie 0.0)");
             double[] tmpData = new double[columnCount];
             for (int i = 0; i < columnCount; i++) {
                  tmpData[i] = uzytkownikIn.nextDouble();
             }
 
             Test testUzytkownika = new Test(tmpData,"testUzytkownika");
-
-        //    System.out.println(finalAnswer(getNClosestTo(testUzytkownika,k)));
+            System.out.println((perceptron.classify(testUzytkownika))?"to setosa":"to nie setosa");
         }else{
             int all = 0;
             int good = 0;
 
-            inputFile = new File("mpp1/iris_test.txt");
+            inputFile = new File("mpp2/iris_test.txt");
             String rawData;
-            Test tmpTest;
 
             try {
                 Scanner input = new Scanner(inputFile);
@@ -64,10 +93,10 @@ public class Main {
                     rawData = input.nextLine();
                     all++;
                     tmpTest = createTest(rawData);
-//                    String finalName =finalAnswer(getNClosestTo(tmpTest,k));
-//                    if(finalName.equals(tmpTest.getConclusion())){
-//                        good++;
-//                    }
+                    isSetosa = perceptron.classify(tmpTest);
+                    if((isSetosa && tmpTest.getConclusion().equals("Iris-setosa"))||(!isSetosa && !tmpTest.getConclusion().equals("Iris-setosa"))) {
+                        good++;
+                    }
                 }
 
                 double effectivness = ((double)good/all)*100;
